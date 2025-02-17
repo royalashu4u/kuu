@@ -1,4 +1,3 @@
-
 import os
 import asyncio
 import pickle
@@ -583,6 +582,16 @@ async def settings_callback(update: Update, context: CallbackContext):
             blocked_list = "No blocked users."
         await query.edit_message_text(f"Blocked Users:\n{blocked_list}")
 
+# Add error handler function
+async def error_handler(update: object, context: CallbackContext):
+    """Handle errors in the telegram bot."""
+    logger.error(msg="Exception occurred:", exc_info=context.error)
+    if update and update.effective_message:
+        await update.effective_message.reply_text(
+            "⚠️ An error occurred. The admin has been notified."
+        )
+
+
 # ========================
 # Main Function
 # ========================
@@ -590,14 +599,10 @@ async def settings_callback(update: Update, context: CallbackContext):
 def main():
     # Add at the beginning of main()
 application.add_error_handler(error_handler)
-
-# Add error handler function
-async def error_handler(update: object, context: CallbackContext):
-    logger.error(msg="Exception occurred:", exc_info=context.error)
-
     application = Application.builder().token(BOT_TOKEN).build()
 
     # Admin handlers (order matters)
+    application.add_error_handler(error_handler)
     application.add_handler(CommandHandler("admin", admin_panel))
     application.add_handler(CommandHandler("full", full_command))
     application.add_handler(CallbackQueryHandler(handle_admin_actions, pattern=r"^admin_.*"))
