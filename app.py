@@ -561,6 +561,17 @@ async def update_bot_menu(user_id, application):
     bot_commands = [BotCommand(cmd, desc) for cmd, desc in commands]
     await application.bot.set_my_commands(bot_commands, scope=BotCommandScopeChat(user_id))
 
+async def handle_feedback(update: Update, context: CallbackContext):
+    query = update.callback_query
+    if not query:
+        return
+    await query.answer()
+    if query.data == "like":
+        await query.edit_message_text("👍 Thank you for your feedback!")
+    elif query.data == "dislike":
+        await query.edit_message_text("👎 Thank you for your feedback!")
+
+
 # ========================
 # Settings Callback Handler
 # ========================
@@ -597,12 +608,13 @@ async def error_handler(update: object, context: CallbackContext):
 # ========================
 
 def main():
-    # Add at the beginning of main()
-application.add_error_handler(error_handler)
+    # Create the Application instance first
     application = Application.builder().token(BOT_TOKEN).build()
-
-    # Admin handlers (order matters)
+    
+    # Add error handler to the application
     application.add_error_handler(error_handler)
+
+    # Admin handlers
     application.add_handler(CommandHandler("admin", admin_panel))
     application.add_handler(CommandHandler("full", full_command))
     application.add_handler(CallbackQueryHandler(handle_admin_actions, pattern=r"^admin_.*"))
@@ -620,29 +632,18 @@ application.add_error_handler(error_handler)
     application.add_handler(CommandHandler("settings", settings))
     application.add_handler(CommandHandler("donate", donate))
 
-    # Message handler for regular (non-command) messages
+    # Message handler
     application.add_handler(MessageHandler(filters.ALL & ~filters.COMMAND, handle_message))
     application.add_handler(CallbackQueryHandler(handle_feedback, pattern=r"^(like|dislike)$"))
-    # Settings callback handler
     application.add_handler(CallbackQueryHandler(settings_callback, pattern=r"^(set_lang|set_privacy|blocked_list)$"))
 
-    # Inactivity job: run every 5 minutes (300 seconds)
+    # Inactivity job
     # application.job_queue.run_repeating(handle_inactive_users, interval=300, first=10)
 
     try:
         application.run_polling()
     finally:
         save_data()
-
-async def handle_feedback(update: Update, context: CallbackContext):
-    query = update.callback_query
-    if not query:
-        return
-    await query.answer()
-    if query.data == "like":
-        await query.edit_message_text("👍 Thank you for your feedback!")
-    elif query.data == "dislike":
-        await query.edit_message_text("👎 Thank you for your feedback!")
 
 if __name__ == "__main__":
     main()
