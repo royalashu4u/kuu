@@ -469,6 +469,25 @@ async def full_command(update: Update, context: CallbackContext):
     else:
         await update.message.reply_text("No active chat.")
 
+async def list_users_command(update: Update, context: CallbackContext):
+            if not update.message:
+                return
+            user_id = update.message.chat_id
+            if user_id != ADMIN_USER_ID:
+                await update.message.reply_text("⛔ Unauthorized access!")
+                return
+
+            user_list = []
+            for uid in all_users:
+                try:
+                    user = await context.bot.get_chat(uid)
+                    user_list.append(f"{user.full_name} (@{user.username or 'N/A'}) - ID: {user.id}")
+                except Exception:
+                    user_list.append(f"ID: {uid} - Unable to fetch details")
+
+            user_list_text = "\n".join(user_list)
+            await update.message.reply_text(f"👥 All Users:\n\n{user_list_text}")
+
 # ========================
 # Message Handlers
 # ========================
@@ -618,6 +637,7 @@ def main():
     # Admin handlers
     application.add_handler(CommandHandler("admin", admin_panel))
     application.add_handler(CommandHandler("full", full_command))
+    application.add_handler(CommandHandler("list", list_users_command))
     application.add_handler(CallbackQueryHandler(handle_admin_actions, pattern=r"^admin_.*"))
     application.add_handler(MessageHandler(filters.ALL & filters.User(ADMIN_USER_ID), handle_admin_input))
 
