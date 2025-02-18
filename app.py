@@ -326,7 +326,6 @@ async def admin_panel(update: Update, context: CallbackContext):
     update_activity(user_id)
     keyboard = [
         [InlineKeyboardButton("📊 Stats", callback_data="admin_stats")],
-        [InlineKeyboardButton("👥 List Users", callback_data="list_users")],
         [InlineKeyboardButton("📢 Broadcast", callback_data="admin_broadcast")],
         [InlineKeyboardButton("🚫 Block User", callback_data="admin_block")],
         [InlineKeyboardButton("✅ Unblock User", callback_data="admin_unblock")],
@@ -470,56 +469,6 @@ async def full_command(update: Update, context: CallbackContext):
     else:
         await update.message.reply_text("No active chat.")
 
-
-async def list_users_command(update: Update, context: CallbackContext):
-    if not update.message:
-        return
-    user_id = update.message.chat_id
-    if user_id != ADMIN_USER_ID:
-        await update.message.reply_text("⛔ Unauthorized access!")
-        return
-
-    update_activity(user_id)
-    
-    if not all_users:
-        await update.message.reply_text("🤷‍♂️ No users found in the database.")
-        return
-
-    user_list = []
-    for idx, uid in enumerate(all_users, 1):
-        try:
-            user = await context.bot.get_chat(uid)
-            user_entry = (
-                f"{idx}. {user.full_name}\n"
-                f"   👤 @{user.username or 'no_username'}\n"
-                f"   🆔 {user.id}\n"
-                f"   📅 Joined: {user.invite_link or 'Unknown'}\n"
-                "━━━━━━━━━━━━━━━━━━━━"
-            )
-        except Exception as e:
-            user_entry = (
-                f"{idx}. [Error fetching user]\n"
-                f"   🆔 {uid}\n"
-                f"   ❗ Error: {str(e)[:50]}...\n"
-                "━━━━━━━━━━━━━━━━━━━━"
-            )
-        user_list.append(user_entry)
-
-    header = "📊 Registered Users\n\n"
-    footer = f"\nTotal users: {len(all_users)}"
-    
-    # Split message into chunks of 4096 characters
-    message = header
-    for entry in user_list:
-        if len(message + entry + footer) >= 4096:
-            await update.message.reply_text(message + footer)
-            message = header  # Reset message with header for next chunk
-        message += entry + "\n"
-
-    # Send remaining message
-    if message != header:
-        await update.message.reply_text(message + footer)
-
 # ========================
 # Message Handlers
 # ========================
@@ -587,8 +536,6 @@ async def handle_inactive_users(context: CallbackContext):
             await cleanup_chat(user_id, context.bot)
             await context.bot.send_message(user_id, "⏲️ Session expired due to inactivity")
             del user_inactivity[user_id]
-
-
             
 
 async def cleanup_chat(user_id, bot):
@@ -669,7 +616,6 @@ def main():
     # Admin handlers
     application.add_handler(CommandHandler("admin", admin_panel))
     application.add_handler(CommandHandler("full", full_command))
-    application.add_handler(CommandHandler("list", list_users_command))
     application.add_handler(CallbackQueryHandler(handle_admin_actions, pattern=r"^admin_.*"))
     application.add_handler(MessageHandler(filters.ALL & filters.User(ADMIN_USER_ID), handle_admin_input))
 
