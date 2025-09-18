@@ -9,9 +9,9 @@ Type=notify
 User=kuu-bot
 Group=kuu-bot
 WorkingDirectory=/root/bot
-Environment=PATH=/root/bot/venv/bin
+Environment=PATH=/root/bot/.venv/bin
 EnvironmentFile=/root/bot/.env
-ExecStart=/root/bot/venv/bin/python app.py
+ExecStart=/root/bot/.venv/bin/python app.py
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStop=/bin/kill -TERM $MAINPID
 KillMode=mixed

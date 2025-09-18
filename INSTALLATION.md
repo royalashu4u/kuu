@@ -36,11 +36,11 @@ sudo chown -R kuu-bot:kuu-bot /root/bot
 # Navigate to application directory
 cd /root/bot
 
-# Create virtual environment
-sudo -u kuu-bot python3 -m venv venv
+# Use existing virtual environment
+# The .venv directory already exists, so we'll use it directly
 
 # Activate virtual environment and install dependencies
-sudo -u kuu-bot bash -c "source venv/bin/activate && pip install -r requirements.txt"
+sudo -u kuu-bot bash -c "source .venv/bin/activate && pip install -r requirements.txt"
 ```
 
 ### 4. Configure Environment
@@ -162,7 +162,7 @@ sudo journalctl -u kuu-bot -f
 
 2. **Update dependencies (if needed):**
    ```bash
-   sudo -u kuu-bot bash -c "cd /root/bot && source venv/bin/activate && pip install -r requirements.txt"
+   sudo -u kuu-bot bash -c "cd /root/bot && source .venv/bin/activate && pip install -r requirements.txt"
    ```
 
 3. **Reload the service:**
@@ -244,7 +244,7 @@ To run the bot in debug mode:
 sudo systemctl stop kuu-bot
 
 # Run manually
-sudo -u kuu-bot bash -c "cd /root/bot && source venv/bin/activate && python app.py"
+sudo -u kuu-bot bash -c "cd /root/bot && source .venv/bin/activate && python app.py"
 ```
 
 ## Security Considerations
