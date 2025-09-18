@@ -188,7 +188,7 @@ async def find(update: Update, context: CallbackContext):
             "Partner found 😺\n\n"
             "/next — find a new partner\n"
             "/stop — stop this chat\n\n"
-            "[https://t.me/KuuChatBot](https://t.me/KuuChatBot)"
+            "_https://t.me/KuuChatBot_"
         )
         await context.bot.send_message(user_id, msg, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         await context.bot.send_message(partner_id, msg, parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
@@ -261,7 +261,7 @@ async def stop(update: Update, context: CallbackContext):
             ])
             await context.bot.send_message(
                 partner_id,
-                "_Your partner has stopped the chat 😞\nType /find to find a new partner_\n\n[https://t.me/KuuChatBot](https://t.me/KuuChatBot)",
+                "_Your partner has stopped the chat 😞\nType /find to find a new partner_\n\n_https://t.me/KuuChatBot_",
                 parse_mode=ParseMode.MARKDOWN,
                 disable_web_page_preview=True
             )
@@ -275,18 +275,18 @@ async def stop(update: Update, context: CallbackContext):
         if user_id in chat_start_times:
             del chat_start_times[user_id]
         await update.message.reply_text(
-            "_You stopped the chat 🙄_\nType /find to find a new partner\n\n[https://t.me/KuuChatBot](https://t.me/KuuChatBot)",
+            "_You stopped the chat 🙄_\nType /find to find a new partner\n\n_https://t.me/KuuChatBot_",
             parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
         )
     elif user_id in waiting_users:
         waiting_users.remove(user_id)
         await update.message.reply_text(
-            "_✅ You have left the queue.\nType /find to find a new partner_\n\n[https://t.me/KuuChatBot](https://t.me/KuuChatBot)",
+            "_✅ You have left the queue.\nType /find to find a new partner_\n\n_https://t.me/KuuChatBot_",
             parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
         )
     else:
         await update.message.reply_text(
-            "_❌ You're not in a chat or queue.\nType /find to find a new partner_\n\n[https://t.me/KuuChatBot](https://t.me/KuuChatBot)",
+            "_❌ You're not in a chat or queue.\nType /find to find a new partner_\n\n_https://t.me/KuuChatBot_",
             parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True
         )
 
